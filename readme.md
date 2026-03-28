@@ -132,15 +132,9 @@ Dann kannst du diese Bilder direkt im README einbinden:
 ## Bilder
 
 ### PCB
-![PCB](Images/pcb.png)
-
-### Schaltplan
-![Schematic](Images/schematic.png)
-
+![PCB](Images/render.jpg)
 ### Gehäuse / Aufbau
-![Enclosure](Images/enclosure.png)
-```
-
+![Enclosure](Images/bernicSeries350.jpg)
 ---
 
 ## ⚙️ Voraussetzungen
