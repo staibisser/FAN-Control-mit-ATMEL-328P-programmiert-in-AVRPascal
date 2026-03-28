@@ -76,14 +76,14 @@ Die Haupt-Schlaufe läuft kontinuierlich mit einer Pause von **250 ms** pro Zykl
 
 ```
 ┌─────────────────────────────────────────────────┐
-│  Einschalten (SchieberOnOff = TRUE) wenn:        │
-│    GEon = 1  (Durchlauferhitzer läuft)           │
-│    OR  Temperatur > 40 °C                        │
-│    OR  Taster aktiv                              │
+│  Einschalten (SchieberOnOff = TRUE) wenn:       │
+│    GEon = 1  (Durchlauferhitzer läuft)          │
+│    OR  Temperatur > 40 °C                       │
+│    OR  Taster aktiv                             │
 ├─────────────────────────────────────────────────┤
-│  Ausschalten (SchieberOnOff = FALSE) wenn:       │
+│  Ausschalten (SchieberOnOff = FALSE) wenn:      │
 │    GEon = 0  AND  Temperatur ≤ 40 °C            │
-│    AND  Taster nicht aktiv                       │
+│    AND  Taster nicht aktiv                      │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -235,6 +235,3 @@ MIT License – siehe [LICENSE](LICENSE)
 
 ---
 
-## Autor
-
-**Christof Biner** ([@staibisser](https://github.com/staibisser))
