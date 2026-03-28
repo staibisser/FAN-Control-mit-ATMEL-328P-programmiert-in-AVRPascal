@@ -113,30 +113,6 @@ FanControl/
 └── README.md
 ```
 
----
-
-## 🖼️ Empfohlene Bilder für GitHub
-
-Damit das Repository besser wirkt, sollten im Ordner `Images/` ein paar Screenshots oder Renderbilder liegen.
-
-Empfohlen:
-
-1. **PCB-Ansicht** aus KiCad
-2. **Schaltplan-Ausschnitt**
-3. **3D-Ansicht oder Gehäusebild**
-4. **Fertige Baugruppe / Prototyp**
-
-Dann kannst du diese Bilder direkt im README einbinden:
-
-```markdown
-## Bilder
-
-### PCB
-![PCB](Images/render.jpg)
-### Gehäuse / Aufbau
-![Enclosure](Images/bernicSeries350.jpg)
----
-
 ## ⚙️ Voraussetzungen
 
 ### Hardware
@@ -160,22 +136,9 @@ Dann kannst du diese Bilder direkt im README einbinden:
 
 Die Firmware wird mit der verwendeten AVRPascal-/FPC-Toolchain erzeugt und anschließend mit `avrdude` auf den Mikrocontroller geladen.
 
-### Beispiel Flashen
-
-```bash
-avrdude -c usbasp -p m328p -P usb -U flash:w:firmware.hex
-```
-
 ### Fuse-Konfiguration
 
 Die Fuse-Bits müssen zur realen Hardware passen, insbesondere bei:
-
-- Taktquelle
-- Brown-out-Detection
-- Start-up-Verhalten
-
-Beispiel aus dem Projektkontext:
-
 - externer **16 MHz Quarz**
 - Brown-out je nach Anwendung aktiviert oder deaktiviert
 
