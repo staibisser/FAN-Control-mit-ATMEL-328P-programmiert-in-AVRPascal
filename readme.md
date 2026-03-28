@@ -246,15 +246,3 @@ MIT License
 ## 👨‍💻 Autor
 
 **Christof Biner**
-
----
-
-## ✅ GitHub-Tipp
-
-Für ein sauberes Repository zusätzlich sinnvoll:
-
-- `.gitignore` für Build-Dateien
-- Schaltplan-/PCB-Screenshots im Ordner `Images/`
-- Release mit Hex-Datei
-- Lizenzdatei `LICENSE`
-- eventuell Stückliste / BOM als PDF oder CSV
