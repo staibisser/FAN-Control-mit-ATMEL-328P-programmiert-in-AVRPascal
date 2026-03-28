@@ -96,19 +96,10 @@ Die Firmware wurde in **AVRPascal** umgesetzt und übernimmt die komplette Ablau
 ```text
 FanControl/
 ├── Hardware/                 # KiCad Projektdateien
-│   ├── Schematic/           # Schaltpläne
-│   ├── PCB/                 # Layout / Board
-│   └── Production/          # Gerber, BOM, Fertigungsdaten (optional)
 │
 ├── Software/                # AVRPascal Firmware
-│   ├── src/                 # Quellcode
-│   ├── build/               # Build-Artefakte (optional, nicht committen)
-│   └── docs/                # Software-Dokumentation (optional)
 │
 ├── Images/                  # Bilder für GitHub README
-│   ├── pcb.png
-│   ├── schematic.png
-│   └── enclosure.png
 │
 └── README.md
 ```
@@ -126,11 +117,8 @@ FanControl/
 
 ### Software
 
-- **AVRPascal / Free Pascal Toolchain**
-- **avrdude** zum Flashen
+- **AVRPascal / Pascal Toolchain**
 - **KiCad** für Änderungen an der Hardware
-
----
 
 ## 🔧 Build & Flash
 
@@ -144,8 +132,6 @@ Die Fuse-Bits müssen zur realen Hardware passen, insbesondere bei:
 
 > Achtung: Falsche Fuse-Einstellungen können den Controller scheinbar "unbrauchbar" machen, bis korrekt neu programmiert wird.
 
----
-
 ## 🧪 Projektstatus
 
 Aktueller Stand des Projekts:
@@ -154,8 +140,6 @@ Aktueller Stand des Projekts:
 - Firmware lauffähig
 - Betrieb mit externer Taktquelle getestet
 - Flashen mit USBasp / avrdude erfolgreich
-
----
 
 ## ⚠️ Wichtiger Hinweis
 
@@ -171,8 +155,6 @@ Der Einsatz erfolgt vollständig auf eigene Verantwortung, insbesondere bei Anwe
 
 Vor praktischem Einsatz müssen alle elektrischen, thermischen und sicherheitstechnischen Aspekte eigenständig geprüft werden.
 
----
-
 ## 🎯 Ziel des Projekts
 
 Dieses Projekt soll zeigen:
@@ -182,8 +164,6 @@ Dieses Projekt soll zeigen:
 - wie Sensorik, Logik und Aktorik in einem kompakten System zusammenspielen
 - wie ein reales Embedded-Projekt sauber dokumentiert werden kann
 
----
-
 ## 🛣️ Mögliche Erweiterungen
 
 - Status-LEDs oder Display
@@ -192,13 +172,9 @@ Dieses Projekt soll zeigen:
 - Parametrierung über Taster oder Schnittstelle
 - Logging von Temperatur- und Zustandsdaten
 
----
-
 ## 📄 Lizenz
 
 MIT License
-
----
 
 ## 👨‍💻 Autor
 
