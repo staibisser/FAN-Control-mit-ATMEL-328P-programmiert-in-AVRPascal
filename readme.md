@@ -1,181 +1,240 @@
-# 🔥 FanControl – Lüfter- und Schiebersteuerung
+# FAN-Control – Lüfter- und Schiebersteuerung
 
-Kompakte Embedded-Steuerung für Lüfter und Abgasschieber eines Gasdurchlauferhitzers.  
-Das Projekt kombiniert eigene Hardwareentwicklung in **KiCad** mit Firmware in **AVRPascal** auf einem **ATmega328PB**.
+> Kompakte Embedded-Steuerung für Lüfter und Abgasschieber eines Gasdurchlauferhitzers,
+> entwickelt mit eigener Hardware in **KiCad** und Firmware in **AVRPascal** auf einem **ATmega328PB**.
 
-Der Fokus liegt auf einer durchgängigen Embedded-Lösung von der Elektronik bis zur realen Anwendung:
-
-**Elektronik → Firmware → Aktorik / Sensorik → Praxisbetrieb**
+![PCB Render](images/render.jpg)
 
 ---
 
-## 📌 Überblick
+## Überblick
 
-**FanControl** ist eine spezialisierte Steuerung für:
+**FAN-Control** überwacht den Betriebszustand eines Gasdurchlauferhitzers und steuert automatisch:
 
-- die Erfassung der Abgas- bzw. Systemtemperatur
-- die Erkennung des Betriebszustands eines Gasdurchlauferhitzers
-- die Ansteuerung eines motorischen Abgasschiebers
-- die temperaturabhängige Zuschaltung eines Lüfters
+- den **Abgasschieber** (motorisch, via H-Brücke) – öffnet beim Einschalten des Geräts
+- den **Lüfter** – schaltet temperaturabhängig zu
 
-Das Projekt dient als technisches Referenzdesign für kompakte Steuerungen im Bereich Embedded Systems, Sensorik und Aktorik.
+Die Steuerung erkennt den Gerätezustand über ein **Analogsignal**, misst die **Abgastemperatur** mit einem DS18B20-Sensor und reagiert zusätzlich auf einen **manuellen Taster**.
 
 ---
 
-## 🚀 Features
+## Systemarchitektur
 
-- Temperaturmessung mit **DS18B20** über **1-Wire**
-- Auswertung eines **Analogsignals** zur Betriebserkennung
-- Motorsteuerung für den **Abgasschieber**
-- Temperaturabhängige **Lüftersteuerung**
-- Versorgung über **24 V DC**
-- Kompakter Aufbau für **DIN-Schienenmontage**
-- Eigene Hardwareentwicklung in **KiCad**
-- Firmware in **AVRPascal** für AVR-Mikrocontroller
-
----
-
-## 🧱 Systemarchitektur
-
-```mermaid
-flowchart LR
-    A[24 V DC Versorgung] --> B[Spannungsaufbereitung]
-    B --> C[ATmega328PB]
-    D[DS18B20 Temperatursensor] --> C
-    E[Analogsignal Gerätezustand] --> F[LM358 Signalaufbereitung]
-    F --> C
-    C --> G[DRV8871 Motortreiber]
-    G --> H[Abgasschieber Motor]
-    C --> I[AO3400A MOSFET]
-    I --> J[Lüfter]
+```
+24 V DC
+   │
+   ▼
+Spannungsaufbereitung
+   │
+   ▼
+ATmega328PB (PD2–PD7)
+   ├── PD3 ◄── LM358 (Analogsignal Gerätezustand)
+   ├── PD4 ◄── DS18B20 (1-Wire Temperatursensor)
+   ├── PD7 ◄── Taster (manuell Ein/Aus)
+   ├── PD5/PD6 ──► DRV8871DDA (H-Brücke → Schieber-Motor)
+   └── PD2 ──► AO3400A (MOSFET → Lüfter)
 ```
 
 ---
 
-## 🔩 Hardware
+## Hardware
 
 ### Hauptkomponenten
 
-- **MCU:** ATmega328PB
-- **Temperatursensor:** DS18B20
-- **Motortreiber:** DRV8871DDA
-- **Lüftertreiber:** AO3400A
-- **Signalaufbereitung:** LM358
-- **Versorgung:** 24 V DC
-- **Gehäuse:** Bernic Series 350 für DIN-Schiene
+| Bauteil             | Bezeichnung     | Funktion                              |
+|---------------------|-----------------|---------------------------------------|
+| Mikrocontroller     | ATmega328PB     | Zentrale Steuerlogik                  |
+| Temperatursensor    | DS18B20         | 1-Wire Temperaturmessung              |
+| Motortreiber        | DRV8871DDA      | H-Brücke für Schieber-Motor           |
+| Lüftertreiber       | AO3400A         | N-Kanal MOSFET zum Schalten des Lüfters |
+| Signalaufbereitung  | LM358           | Operationsverstärker für Geräte-Signal |
+| Versorgung          | 24 V DC         | Externe Versorgungsspannung           |
+| Gehäuse             | Bernic Series 350 | DIN-Schienenmontage               |
 
-### Hardware-Funktionen
+### Gehäuse
 
-Die Hardware ist für robuste Einbindung in eine kompakte Steuerung ausgelegt:
+![Bernic Series 350](images/bernicSeries350.jpg)
 
-- Einlesen der Temperatur über 1-Wire
-- Aufbereitung externer Signale über Operationsverstärker
-- Sichere Motoransteuerung über H-Brückentreiber
-- Schalten eines Lüfters über MOSFET
-- Montage in einem praxisgerechten Hutschienengehäuse
+### Pin-Belegung (ATmega328PB)
 
----
-
-## 💻 Firmware
-
-Die Firmware wurde in **AVRPascal** umgesetzt und übernimmt die komplette Ablaufsteuerung.
-
-### Firmware-Aufgaben
-
-- Initialisierung der Hardware
-- Temperaturmessung über DS18B20
-- Erkennung des Anlagenzustands
-- Steuerung des Schiebermotors
-- Zuschaltung des Lüfters abhängig von Temperatur und Zustand
-- Ablauf- und Zustandslogik für den sicheren Betrieb
+| Pin  | Port | Richtung | Funktion                                    |
+|------|------|----------|---------------------------------------------|
+| PD2  | D2   | OUTPUT   | Lüfter Ein/Aus (via AO3400A MOSFET)         |
+| PD3  | D3   | INPUT    | Betriebssignal Durchlauferhitzer (via LM358)|
+| PD4  | D4   | I/O      | DS18B20 1-Wire Datenleitung                 |
+| PD5  | D5   | OUTPUT   | DRV8871 IN1 – Motor Auf                     |
+| PD6  | D6   | OUTPUT   | DRV8871 IN2 – Motor Zu                      |
+| PD7  | D7   | INPUT    | Taster – manuell Schieber Ein/Aus           |
 
 ---
 
-## 📁 Projektstruktur
+## Firmware
 
-```text
-FanControl/
-├── Hardware/                 # KiCad Projektdateien
-│
-├── Software/                # AVRPascal Firmware
-│
-├── Images/                  # Bilder für GitHub README
-│
-└── README.md
+### Zustandslogik
+
+Die Haupt-Schlaufe läuft kontinuierlich mit einer Pause von **250 ms** pro Zyklus.
+
+```
+┌─────────────────────────────────────────────────┐
+│  Einschalten (SchieberOnOff = TRUE) wenn:        │
+│    GEon = 1  (Durchlauferhitzer läuft)           │
+│    OR  Temperatur > 40 °C                        │
+│    OR  Taster aktiv                              │
+├─────────────────────────────────────────────────┤
+│  Ausschalten (SchieberOnOff = FALSE) wenn:       │
+│    GEon = 0  AND  Temperatur ≤ 40 °C            │
+│    AND  Taster nicht aktiv                       │
+└─────────────────────────────────────────────────┘
 ```
 
-## ⚙️ Voraussetzungen
+**Temperatur-Schwellwert:** `TempFan = 40 °C` (konfigurierbar als Konstante im Quellcode)
+
+**Fehlertoleranz:** Bei einem Lesefehler des DS18B20 (`seCRCError`, `seNoSensor`) bleibt der zuletzt gültige Temperaturwert (`lastGoodTemp`) erhalten.
+
+### Motor-Ansteuerung
+
+Der DRV8871-Motortreiber wird über zwei Ausgänge angesteuert:
+
+| Befehl | IN1 | IN2 | Lüfter |
+|--------|-----|-----|--------|
+| Schieber AUF | HIGH | LOW | EIN |
+| Schieber ZU  | LOW | HIGH | AUS |
+
+Zwischen den Schaltzuständen werden kurze Mikrosekunden-Pausen eingehalten, um Stromspitzen zu vermeiden.
+
+### DS18B20 – Eigene 1-Wire Implementierung
+
+Der Sensor wird über **direktes Port-Bit-Banging** (DDRD / PORTD / PIND) ohne externe Bibliothek angesprochen. Die Implementierung beinhaltet:
+
+- 1-Wire Reset mit Präsenzsignal-Erkennung
+- Bit-genaues Read/Write mit µs-Timing
+- **CRC8 Dallas-Prüfsumme** zur Datenvalidierung
+- Fehlerbehandlung über den Typ `TSensorError`:
+
+| Fehlercode     | Bedeutung                          |
+|----------------|------------------------------------|
+| `seNone`       | Kein Fehler                        |
+| `seNoSensor`   | Sensor nicht erkannt (kein Präsenzsignal) |
+| `seCRCError`   | Prüfsummenfehler                   |
+| `seOutOfRange` | Temperaturwert ausserhalb −55…+125 °C |
+
+---
+
+## Projektstruktur
+
+```
+FAN-Control-mit-ATMEL-328P-programmiert-in-AVRPascal/
+├── Hardware/
+│   ├── 700000008-SCHIEBER-V3.kicad_sch   # Schaltplan
+│   ├── 700000008-SCHIEBER-V3.kicad_pcb   # PCB-Layout
+│   └── 700000008-SCHIEBER-V3.kicad_pro   # KiCad Projektdatei
+│
+├── Software/
+│   ├── P_700000008_V3_A.pas              # Hauptprogramm
+│   ├── DS18B20.pas                       # 1-Wire Sensor Unit
+│   ├── P_700000008_V3_A.hex              # Flash-fertige Hex-Datei
+│   ├── P_700000008_V3_A.elf              # ELF Debug-Binary
+│   └── P_700000008_V3_A.bin              # Rohes Binärimage
+│
+├── images/
+│   ├── render.jpg                        # PCB 3D-Render
+│   └── bernicSeries350.jpg               # Gehäuse DIN-Schiene
+│
+├── LICENSE
+└── readme.md
+```
+
+---
+
+## Voraussetzungen
 
 ### Hardware
 
 - Zielhardware mit **ATmega328PB**
-- 24-V-Versorgung
-- DS18B20
-- Abgasschieber mit geeignetem Motor
+- 24 V DC Versorgung
+- DS18B20 Temperatursensor
+- Abgasschieber mit geeignetem DC-Motor
 - Lüfter
-- Programmer, z. B. **USBasp**
+- Programmer: **USBasp** oder kompatibel
 
 ### Software
 
-- **AVRPascal / Pascal Toolchain**
-- **KiCad** für Änderungen an der Hardware
+- [AVRPascal / Free Pascal AVR Toolchain](https://www.freepascal.org/)
+- [avrdude](https://github.com/avrdudes/avrdude) zum Flashen
+- [KiCad](https://www.kicad.org/) für Änderungen an der Hardware
 
-## 🔧 Build & Flash
+---
 
-Die Firmware wird mit der verwendeten AVRPascal-/FPC-Toolchain erzeugt und anschließend mit `avrdude` auf den Mikrocontroller geladen.
+## Build & Flash
+
+### Flashen (fertige Hex-Datei)
+
+```bash
+avrdude -c usbasp -p m328pb -P usb -U flash:w:Software/P_700000008_V3_A.hex
+```
+
+> **Hinweis:** Den Partcode `-p m328pb` verwenden (nicht `m328p`), da es sich um den **ATmega328PB** handelt.
 
 ### Fuse-Konfiguration
 
-Die Fuse-Bits müssen zur realen Hardware passen, insbesondere bei:
-- externer **16 MHz Quarz**
-- Brown-out je nach Anwendung aktiviert oder deaktiviert
+Die Fuse-Bits müssen zur Taktquelle passen:
 
-> Achtung: Falsche Fuse-Einstellungen können den Controller scheinbar "unbrauchbar" machen, bis korrekt neu programmiert wird.
+| Fuse   | Empfehlung                        |
+|--------|-----------------------------------|
+| CKSEL  | Externer 16 MHz Quarz             |
+| CKDIV8 | Deaktiviert (kein Vorteiler)      |
+| BODLEVEL | Je nach Anwendung (empfohlen: 2,7 V) |
 
-## 🧪 Projektstatus
+Beispiel (externer 16 MHz Quarz, BOD 2,7 V):
 
-Aktueller Stand des Projekts:
+```bash
+avrdude -c usbasp -p m328pb -P usb \
+  -U lfuse:w:0xFF:m \
+  -U hfuse:w:0xD9:m \
+  -U efuse:w:0xFF:m
+```
 
-- Hardware entwickelt
-- Firmware lauffähig
-- Betrieb mit externer Taktquelle getestet
-- Flashen mit USBasp / avrdude erfolgreich
+> ⚠️ Falsche Fuse-Einstellungen können den Mikrocontroller scheinbar unbrauchbar machen. Vor dem Setzen unbedingt mit dem Datenblatt abgleichen.
 
-## ⚠️ Wichtiger Hinweis
+---
 
-Dieses Repository beschreibt ein technisches Projekt aus dem Umfeld von Steuerung, Temperaturerfassung und Aktorik.  
-Es ist **keine zertifizierte Sicherheitssteuerung** und **kein freigegebenes Serienprodukt**.
+## Projektstatus
 
-Der Einsatz erfolgt vollständig auf eigene Verantwortung, insbesondere bei Anwendungen mit:
+| Bereich      | Status          |
+|--------------|-----------------|
+| Hardware     | ✅ Entwickelt    |
+| Firmware     | ✅ Lauffähig     |
+| Taktquelle   | ✅ Externer 16 MHz Quarz getestet |
+| Flash-Prozess | ✅ USBasp / avrdude erfolgreich |
+| Feldbetrieb  | 🔄 In Erprobung |
 
-- Gasgeräten
-- Wärmequellen
-- beweglichen Aktoren
-- sicherheitsrelevanten Funktionen
+---
 
-Vor praktischem Einsatz müssen alle elektrischen, thermischen und sicherheitstechnischen Aspekte eigenständig geprüft werden.
+## Mögliche Erweiterungen
 
-## 🎯 Ziel des Projekts
+- Serielle Diagnoseausgabe (UART) für Temperatur- und Zustandslogs
+- Fehlererkennung mit Status-LED oder Summerton
+- Parametrierung von `TempFan` über Taster oder EEPROM
+- Watchdog-Timer für erhöhte Ausfallsicherheit
+- Stückliste (BOM) als PDF oder CSV
 
-Dieses Projekt soll zeigen:
+---
 
-- wie eine eigene Embedded-Hardware mit **KiCad** entwickelt wird
-- wie sich eine praxisnahe Steuerung mit **AVRPascal** umsetzen lässt
-- wie Sensorik, Logik und Aktorik in einem kompakten System zusammenspielen
-- wie ein reales Embedded-Projekt sauber dokumentiert werden kann
+## Sicherheitshinweis
 
-## 🛣️ Mögliche Erweiterungen
+Dieses Projekt ist **kein zertifiziertes Sicherheitsprodukt** und **kein freigegebenes Seriengerät**.
+Der Einsatz erfolgt ausschliesslich auf eigene Verantwortung – insbesondere bei Anwendungen mit
+Gasgeräten, Wärmequellen oder beweglichen Aktoren. Vor dem Praxiseinsatz müssen alle
+elektrischen, thermischen und sicherheitstechnischen Aspekte eigenständig geprüft werden.
 
-- Status-LEDs oder Display
-- Serielle Diagnoseausgabe
-- Fehlererkennung für Sensor und Aktor
-- Parametrierung über Taster oder Schnittstelle
-- Logging von Temperatur- und Zustandsdaten
+---
 
-## 📄 Lizenz
+## Lizenz
 
-MIT License
+MIT License – siehe [LICENSE](LICENSE)
 
-## 👨‍💻 Autor
+---
 
-**Christof Biner**
+## Autor
+
+**Christof Biner** ([@staibisser](https://github.com/staibisser))
