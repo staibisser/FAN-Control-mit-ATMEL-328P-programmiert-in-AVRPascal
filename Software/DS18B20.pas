@@ -1,8 +1,9 @@
-unit ds18b20;
+unit DS18B20;
 
 {
-  Author  : copyright (c) staibisser
+  Author  : copyright (c) Christof Biner
   License : MIT (siehe LICENSE Datei im Repository)
+  Datim:  30.03.2026
 }
 
 {$MODE objfpc}
@@ -150,8 +151,41 @@ begin
 
   WriteByte($CC);  // Skip ROM
   WriteByte($44);  // Convert T
-  delay_ms(750);   // Wandlungszeit warten
+  delay(750);   // Wandlungszeit warten
 
   if not Reset then
   begin
-    err := seNoSensor
+    err := seNoSensor;
+    exit(false);
+  end;
+
+  WriteByte($CC);  // Skip ROM
+  WriteByte($BE);  // Read Scratchpad
+  for i := 0 to 8 do
+    data[i] := ReadByte;
+
+  if CRC8_Dallas(data, 8) <> data[8] then
+  begin
+    err := seCRCError;
+    exit(false);
+  end;
+
+  raw := smallint(word(data[1]) shl 8 or word(data[0]));
+  calc := (longint(raw) * 100) div 16;
+
+  if (calc < -5500) or (calc > 12500) then
+  begin
+    err := seOutOfRange;
+    exit(false);
+  end;
+
+  tempCents := calc;
+  Result := true;
+end;
+
+function TDS18B20.ReadTemperature(out tempCents: integer; out err: TSensorError): boolean;
+begin
+  Result := ReadScratchpad(tempCents, err);
+end;
+
+end.
