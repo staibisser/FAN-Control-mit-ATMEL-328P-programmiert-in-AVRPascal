@@ -133,9 +133,6 @@ FAN-Control-mit-ATMEL-328P-programmiert-in-AVRPascal/
 │   ├── P_700000008_V3_A.pas              # Hauptprogramm
 │   ├── DS18B20.pas                       # 1-Wire Sensor Unit
 │   ├── testDS18B20.pas                   # 1-Wire Sensor Test mit Ausgabe an UART
-│   ├── P_700000008_V3_A.hex              # Flash-fertige Hex-Datei
-│   ├── P_700000008_V3_A.elf              # ELF Debug-Binary
-│   └── P_700000008_V3_A.bin              # Rohes Binärimage
 │
 ├── images/
 │   ├── render.jpg                        # PCB 3D-Render
