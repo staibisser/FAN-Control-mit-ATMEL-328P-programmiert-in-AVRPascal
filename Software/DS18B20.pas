@@ -1,7 +1,7 @@
 unit ds18b20;
 
 {
-  Author  : Christof Biner
+  Author  : copyright (c) staibisser
   License : MIT (siehe LICENSE Datei im Repository)
 }
 
@@ -30,7 +30,7 @@ type
     function Reset: boolean;
     procedure WriteByte(b: byte);
     function ReadByte: byte;
-    function ReadScratchpad(out tempCents: smallint; out err: TSensorError): boolean;
+    function ReadScratchpad(out tempCents: integer; out err: TSensorError): boolean;  // ← smallint → integer
 
   public
     procedure Init(pin: byte);
@@ -133,7 +133,7 @@ begin
   end;
 end;
 
-function TDS18B20.ReadScratchpad(out tempCents: smallint; out err: TSensorError): boolean;
+function TDS18B20.ReadScratchpad(out tempCents: integer; out err: TSensorError): boolean;  // ← smallint → integer
 var
   data: array[0..8] of byte;
   i: byte;
@@ -148,44 +148,10 @@ begin
     exit(false);
   end;
 
-  WriteByte($CC);
-  WriteByte($44);
-  Delay(750);
+  WriteByte($CC);  // Skip ROM
+  WriteByte($44);  // Convert T
+  delay_ms(750);   // Wandlungszeit warten
 
   if not Reset then
   begin
-    err := seNoSensor;
-    exit(false);
-  end;
-
-  WriteByte($CC);
-  WriteByte($BE);
-  for i := 0 to 8 do
-    data[i] := ReadByte;
-
-  if CRC8_Dallas(data, 8) <> data[8] then
-  begin
-    err := seCRCError;
-    exit(false);
-  end;
-
-  raw := smallint(word(data[1]) shl 8 or word(data[0]));
-  calc := (longint(raw) * 100) div 16;
-
-  if (calc < -5500) or (calc > 12500) then
-  begin
-    err := seOutOfRange;
-    exit(false);
-  end;
-
-  tempCents := calc;
-  Result := true;
-end;
-
-function TDS18B20.ReadTemperature(out tempCents: integer; out err: TSensorError): boolean;
-begin
-  Result := ReadScratchpad(tempCents, err);
-end;
-
-end.
-
+    err := seNoSensor
