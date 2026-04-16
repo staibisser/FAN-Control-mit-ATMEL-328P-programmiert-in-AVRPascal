@@ -76,6 +76,7 @@ Die Haupt-Schlaufe läuft kontinuierlich mit einer Pause von **250 ms** pro Zykl
 
 ```
 ┌─────────────────────────────────────────────────┐
+<<<<<<< Updated upstream
 │  Einschalten (SchieberOnOff = TRUE) wenn:       │
 │    GEon = 1  (Durchlauferhitzer läuft)          │
 │    OR  Temperatur > 40 °C                       │
@@ -84,6 +85,16 @@ Die Haupt-Schlaufe läuft kontinuierlich mit einer Pause von **250 ms** pro Zykl
 │  Ausschalten (SchieberOnOff = FALSE) wenn:      │
 │    GEon = 0  AND  Temperatur ≤ 40 °C            │
 │    AND  Taster nicht aktiv                      │
+=======
+│  Einschalten (SchieberOnOff = TRUE) wenn:        │
+│    GEon = 1  (Durchlauferhitzer läuft)           │
+│    OR  Temperatur > 40 °C                        │
+│    OR  Taster aktiv                              │
+├─────────────────────────────────────────────────┤
+│  Ausschalten (SchieberOnOff = FALSE) wenn:       │
+│    GEon = 0  AND  Temperatur ≤ 40 °C            │
+│    AND  Taster nicht aktiv                       │
+>>>>>>> Stashed changes
 └─────────────────────────────────────────────────┘
 ```
 
@@ -132,7 +143,13 @@ FAN-Control-mit-ATMEL-328P-programmiert-in-AVRPascal/
 ├── Software/
 │   ├── P_700000008_V3_A.pas              # Hauptprogramm
 │   ├── DS18B20.pas                       # 1-Wire Sensor Unit
+<<<<<<< Updated upstream
 │   ├── testDS18B20.pas                   # 1-Wire Sensor Test mit Ausgabe an UART
+=======
+│   ├── P_700000008_V3_A.hex              # Flash-fertige Hex-Datei
+│   ├── P_700000008_V3_A.elf              # ELF Debug-Binary
+│   └── P_700000008_V3_A.bin              # Rohes Binärimage
+>>>>>>> Stashed changes
 │
 ├── images/
 │   ├── render.jpg                        # PCB 3D-Render
@@ -233,3 +250,9 @@ MIT License – siehe [LICENSE](LICENSE)
 
 ---
 
+<<<<<<< Updated upstream
+=======
+## Autor
+
+**Christof Biner** ([@staibisser](https://github.com/staibisser))
+>>>>>>> Stashed changes
